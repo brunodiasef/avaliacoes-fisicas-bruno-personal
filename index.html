@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Avaliações Físicas — Bruno Personal</title>
+<style>
+  :root { --azul:#1d4ed8; --preto:#111827; --cinza:#6b7280; --linha:#e5e7eb; --fundo:#f3f6fd; --pagina:#eef1f7; --bom:#15803d; --ruim:#b91c1c; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Roboto, Arial, sans-serif; color: var(--preto); margin: 0; background: var(--pagina); font-size: 14px; line-height: 1.45; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
+  header { display: flex; align-items: center; gap: 18px; background: #fff; border-radius: 10px; padding: 14px 16px; border-bottom: 4px solid var(--azul); }
+  header img { height: 96px; flex: none; }
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: .3px; text-transform: uppercase; line-height: 1.15; }
+  h1 span { color: var(--azul); }
+  .sub { color: var(--cinza); font-size: 12.5px; }
+  .sub b { color: var(--preto); }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+  .kpi { background: #fff; border-left: 5px solid var(--azul); border-radius: 8px; padding: 10px 12px; }
+  .kpi .l { font-size: 10.5px; text-transform: uppercase; color: var(--cinza); letter-spacing: .4px; }
+  .kpi .v { font-size: 24px; font-weight: 700; }
+  .kpi .v small { font-size: 13px; font-weight: 600; }
+  .kpi .d { font-size: 11.5px; color: var(--cinza); }
+
+  .menu { background: #fff; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  .menu > button { all: unset; box-sizing: border-box; width: 100%; display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 14px 16px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--azul); }
+  .menu > button:hover { background: var(--fundo); }
+  .menu > button:focus-visible { outline: 2px solid var(--azul); outline-offset: -2px; }
+  .menu > button .seta { transition: transform .2s; font-size: 12px; }
+  .menu.aberto > button { border-bottom: 2px solid var(--azul); }
+  .menu.aberto > button .seta { transform: rotate(180deg); }
+  .painel { display: none; padding: 12px 16px 14px; }
+  .menu.aberto .painel { display: block; }
+  .dica { color: var(--cinza); font-size: 12px; margin: 0 0 8px; }
+  .note { color: var(--cinza); font-size: 11.5px; margin: 8px 0 0; }
+
+  .rolagem { overflow-x: auto; border: 1px solid var(--linha); border-radius: 6px; }
+  table { width: 100%; min-width: 780px; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; }
+  th, td { border-bottom: 1px solid var(--linha); padding: 7px 5px; text-align: center; white-space: nowrap; }
+  thead th { background: var(--preto); color: #fff; font-weight: 600; }
+  thead th:first-child { width: 190px; text-align: left; padding-left: 10px; }
+  thead th:last-child { width: 68px; }
+  tbody th { text-align: left; background: #fafafa; font-weight: 600; padding-left: 10px; position: sticky; left: 0; }
+  thead th:first-child { position: sticky; left: 0; }
+  tr.grp th { background: var(--fundo); color: var(--azul); text-transform: uppercase; font-size: 11px; letter-spacing: .4px; }
+  tr.item { cursor: pointer; }
+  tr.item:hover td, tr.item:hover th, tr.item.sel td, tr.item.sel th { background: #dbe6fd; }
+  tr.item:focus-visible { outline: 2px solid var(--azul); outline-offset: -2px; }
+  tr.item th::after { content: "📈"; float: right; opacity: .35; font-size: 11px; }
+  td.last { background: var(--fundo); font-weight: 700; }
+  td.dv { font-weight: 700; }
+  .up { color: var(--bom); } .down { color: var(--ruim); } .neu { color: var(--cinza); }
+  .min { color: var(--azul); font-weight: 700; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .box { background: var(--fundo); border-radius: 8px; padding: 10px 12px; }
+  .box h4 { margin: 0 0 4px; font-size: 13px; text-transform: uppercase; color: var(--azul); }
+  .box ul { margin: 4px 0 0; padding-left: 18px; } .box li { margin-bottom: 5px; }
+
+  .fundo-card { display: none; position: fixed; inset: 0; background: rgba(17,24,39,.55); align-items: center; justify-content: center; padding: 14px; z-index: 10; }
+  .fundo-card.aberto { display: flex; }
+  .card { background: #fff; border-radius: 12px; width: 100%; max-width: 680px; padding: 14px 16px 12px; box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+  .card-topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .card h3 { margin: 0; font-size: 16px; text-transform: uppercase; letter-spacing: .3px; }
+  .card .secao { font-size: 11px; color: var(--cinza); text-transform: uppercase; letter-spacing: .4px; }
+  .fechar { all: unset; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; text-align: center; line-height: 32px; font-size: 20px; color: var(--cinza); background: var(--pagina); flex: none; }
+  .fechar:hover { background: var(--preto); color: #fff; }
+  .fechar:focus-visible { outline: 2px solid var(--azul); }
+  .nav { display: flex; align-items: center; gap: 4px; }
+  #card-grafico { flex: 1; min-width: 0; }
+  .seta-nav { all: unset; cursor: pointer; flex: none; width: 34px; height: 56px; border-radius: 8px; text-align: center; line-height: 52px; font-size: 30px; font-weight: 700; color: var(--azul); background: var(--fundo); user-select: none; }
+  .seta-nav:hover { background: var(--azul); color: #fff; }
+  .seta-nav:focus-visible { outline: 2px solid var(--azul); }
+  .card svg { width: 100%; height: auto; display: block; margin-top: 6px; }
+  .resumo { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; font-size: 12.5px; }
+  .resumo span { background: var(--fundo); border-radius: 6px; padding: 4px 8px; }
+
+  footer { margin-top: 14px; color: var(--cinza); font-size: 11px; text-align: center; }
+  .area-pdf { text-align: center; margin-top: 16px; }
+  .btn-pdf { all: unset; box-sizing: border-box; cursor: pointer; color: var(--cinza); font-size: 12.5px; padding: 6px 14px; border: 1px solid #c4c9d2; border-radius: 6px; }
+  .btn-pdf:hover { color: var(--preto); border-color: var(--cinza); }
+  .btn-pdf:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+
+  /* Relatório para PDF (layout da primeira versão): só aparece na impressão */
+  #rel { display: none; }
+  @page { size: A4; margin: 12mm 11mm; }
+  @media print {
+    body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .wrap, .fundo-card { display: none !important; }
+    #rel { display: block; font-family: "Segoe UI", Arial, sans-serif; color: var(--preto); font-size: 11px; line-height: 1.45; }
+  }
+  #rel .rwrap { max-width: 190mm; margin: 0 auto; padding: 8px; }
+  #rel header { flex-direction: row; text-align: left; gap: 18px; background: none; border-radius: 0; padding: 0 0 10px; border-bottom: 3px solid var(--azul); }
+  #rel header img { height: 92px; }
+  #rel h1 { font-size: 21px; margin: 0 0 2px; }
+  #rel .sub { font-size: 11px; }
+  #rel h2 { font-size: 13px; text-transform: uppercase; color: var(--azul); border-bottom: 2px solid var(--azul); padding-bottom: 3px; margin: 18px 0 8px; letter-spacing: .4px; }
+  #rel .kpis { grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0 0; }
+  #rel .kpi { background: var(--fundo); border-left: 4px solid var(--azul); border-radius: 4px; padding: 8px 10px; }
+  #rel .kpi .l { font-size: 9px; } #rel .kpi .v { font-size: 20px; } #rel .kpi .v small { font-size: 11px; } #rel .kpi .d { font-size: 9.5px; }
+  #rel .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #rel .chart { border: 1px solid var(--linha); border-radius: 4px; padding: 6px 6px 0; break-inside: avoid; }
+  #rel .chart h3 { margin: 0 0 0 4px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .3px; }
+  #rel svg { width: 100%; height: auto; display: block; }
+  #rel table { min-width: 0; font-size: 9.2px; break-inside: avoid; }
+  #rel th, #rel td { border: 1px solid var(--linha); padding: 3px 4px; }
+  #rel thead th:first-child { width: 22%; position: static; padding-left: 4px; }
+  #rel thead th:last-child { width: 8%; }
+  #rel tbody th { position: static; padding-left: 4px; }
+  #rel tr.grp th { font-size: 8.5px; }
+  #rel .note { font-size: 9.5px; margin: 4px 0 0; }
+  #rel .cols { grid-template-columns: 1fr 1fr; gap: 14px; }
+  #rel .box { border-radius: 4px; padding: 8px 10px; break-inside: avoid; }
+  #rel .box h4 { font-size: 11px; }
+  #rel .box ul { padding-left: 16px; } #rel .box li { margin-bottom: 4px; }
+  #rel .pb { break-before: page; }
+  #rel footer { margin-top: 16px; border-top: 1px solid var(--linha); padding-top: 6px; font-size: 9px; display: flex; justify-content: space-between; gap: 10px; text-align: left; }
+  @media (max-width: 640px) {
+    header { flex-direction: column; text-align: center; gap: 8px; } header img { height: 80px; }
+    h1 { font-size: 18px; }
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .cols { grid-template-columns: 1fr; }
+    thead th:first-child { width: 178px; }
+    table { font-size: 12px; }
+  }
+
+  /* ===== Animações ===== */
+  /* Menus abrem e fecham deslizando */
+  .painel { display: grid !important; grid-template-rows: 0fr; padding: 0; transition: grid-template-rows .45s cubic-bezier(.16,1,.3,1); }
+  .menu.aberto .painel { grid-template-rows: 1fr; }
+  .painel > .interno { overflow: hidden; min-height: 0; opacity: 0; transition: opacity .3s ease; }
+  .menu.aberto .painel > .interno { opacity: 1; transition-delay: .08s; }
+  .painel .pad { padding: 12px 16px 14px; }
+  #rel .pad { padding: 0; }
+
+  /* Efeito ao rolar: elementos sobem e aparecem quando entram na tela */
+  .revela { opacity: 0; transform: translateY(22px); transition: opacity .6s ease, transform .7s cubic-bezier(.16,1,.3,1); transition-delay: var(--atraso, 0s); }
+  .revela.visivel { opacity: 1; transform: none; }
+  tr.item.revela { transform: translateX(-14px); }
+  tr.item.revela.visivel { transform: none; }
+
+  /* Gráfico: linha se desenha e os pontos aparecem um a um */
+  .card .linha { stroke-dasharray: 1; stroke-dashoffset: 1; animation: desenha 1.1s cubic-bezier(.65,0,.35,1) forwards; }
+  .card .area { opacity: 0; animation: surge .6s ease .7s forwards; }
+  .card .pt { opacity: 0; transform-box: fill-box; transform-origin: center; animation: pipoca .4s cubic-bezier(.34,1.56,.64,1) forwards; }
+  @keyframes desenha { to { stroke-dashoffset: 0; } }
+  @keyframes surge { to { opacity: .08; } }
+  @keyframes pipoca { from { opacity: 0; transform: scale(.3); } to { opacity: 1; transform: scale(1); } }
+
+  /* Card: entrada suave e troca deslizando com as setas */
+  .fundo-card.aberto { animation: escurece .25s ease; }
+  .fundo-card.aberto .card { animation: cardEntra .35s cubic-bezier(.16,1,.3,1); }
+  @keyframes escurece { from { background: rgba(17,24,39,0); } }
+  @keyframes cardEntra { from { opacity: 0; transform: translateY(18px) scale(.96); } }
+  #card-grafico.vem-dir { animation: vemDir .35s cubic-bezier(.16,1,.3,1); }
+  #card-grafico.vem-esq { animation: vemEsq .35s cubic-bezier(.16,1,.3,1); }
+  @keyframes vemDir { from { opacity: 0; transform: translateX(40px); } }
+  @keyframes vemEsq { from { opacity: 0; transform: translateX(-40px); } }
+
+  /* Quem pediu menos movimento no celular/computador vê tudo parado */
+  @media (prefers-reduced-motion: reduce) {
+    .painel, .painel > .interno, .revela { transition: none !important; }
+    .revela { opacity: 1; transform: none; }
+    .card .linha, .card .area, .card .pt, .fundo-card.aberto, .fundo-card.aberto .card, #card-grafico.vem-dir, #card-grafico.vem-esq { animation: none !important; }
+    .card .linha { stroke-dashoffset: 0; } .card .area { opacity: .08; } .card .pt { opacity: 1; }
+  }
+
+  /* ===== Abertura e login ===== */
+  [hidden] { display: none !important; }
+  #abertura { position: fixed; inset: 0; z-index: 20; background: var(--pagina); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 20px; overflow-y: auto; transition: opacity .45s ease; }
+  #abertura.sai { opacity: 0; pointer-events: none; }
+  #logo-abertura { width: min(72vw, 400px); height: auto; animation: logoSurge 1.5s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes logoSurge { 0% { opacity: 0; transform: scale(.6) translateY(24px); filter: blur(10px); } 60% { opacity: 1; filter: blur(0); } 100% { opacity: 1; transform: none; filter: blur(0); } }
+  #login { background: #fff; border-radius: 14px; border-bottom: 4px solid var(--azul); width: 100%; max-width: 380px; padding: 20px 20px 16px; text-align: center; box-shadow: 0 12px 34px rgba(17,24,39,.12); opacity: 0; transform: translateY(18px); transition: opacity .5s ease, transform .6s cubic-bezier(.16,1,.3,1); }
+  #login.visivel { opacity: 1; transform: none; }
+  #login h2 { margin: 0 0 2px; font-size: 17px; text-transform: uppercase; letter-spacing: .4px; }
+  #login h2 span { color: var(--azul); }
+  #login p { margin: 0 0 14px; color: var(--cinza); font-size: 12.5px; }
+  .btn { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px 14px; border-radius: 9px; font-weight: 700; font-size: 14px; margin-top: 10px; transition: transform .15s ease, background .2s ease; }
+  .btn:active { transform: scale(.98); }
+  .btn:focus-visible { outline: 2px solid var(--preto); outline-offset: 2px; }
+  .btn.aluno { background: var(--azul); color: #fff; } .btn.aluno:hover { background: #1e40af; }
+  .btn.admin { background: var(--preto); color: #fff; } .btn.admin:hover { background: #000; }
+  .btn[disabled] { opacity: .55; pointer-events: none; }
+  .btn small { font-weight: 400; opacity: .8; font-size: 11.5px; }
+  #login-msg { min-height: 18px; margin: 12px 0 0; font-size: 12.5px; color: var(--ruim); }
+  #login-msg.ok { color: var(--cinza); }
+  .link { all: unset; cursor: pointer; color: var(--cinza); font-size: 12px; text-decoration: underline; }
+  .link:hover { color: var(--preto); }
+  .link:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+  #form-email { margin-top: 12px; border-top: 1px solid var(--linha); padding-top: 12px; }
+  #form-email input { width: 100%; font: inherit; font-size: 14px; padding: 11px 12px; margin-bottom: 8px; border: 1px solid #c4c9d2; border-radius: 9px; background: #fff; color: var(--preto); }
+  #form-email input:focus-visible { outline: 2px solid var(--azul); outline-offset: 1px; border-color: var(--azul); }
+  #form-email .btn { margin-top: 2px; }
+  #form-email .links { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+
+  /* Barra do usuário e lista do administrador */
+  .barra { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; font-size: 12.5px; color: var(--cinza); }
+  .barra .acoes { display: flex; gap: 8px; }
+  .mini { all: unset; box-sizing: border-box; cursor: pointer; color: var(--cinza); font-size: 12.5px; padding: 6px 12px; border: 1px solid #c4c9d2; border-radius: 6px; background: #fff; }
+  .mini:hover { color: var(--preto); border-color: var(--cinza); }
+  .mini:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+  .aluno-item { background: #fff; border-radius: 10px; border-left: 5px solid var(--azul); padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .aluno-item b { font-size: 15px; } .aluno-item .em { color: var(--cinza); font-size: 12.5px; }
+  .aluno-item .sem { color: var(--ruim); }
+  #dlg-email { border: 0; border-radius: 12px; padding: 18px; width: min(92vw, 380px); box-shadow: 0 20px 50px rgba(0,0,0,.35); color: var(--preto); }
+  #dlg-email::backdrop { background: rgba(17,24,39,.55); }
+  #dlg-email h3 { margin: 0 0 6px; font-size: 15px; text-transform: uppercase; color: var(--azul); }
+  #dlg-email p { margin: 0 0 10px; font-size: 12.5px; color: var(--cinza); }
+  #dlg-email input { width: 100%; font: inherit; font-size: 14px; padding: 10px 12px; border: 1px solid #c4c9d2; border-radius: 8px; }
+  #dlg-email input:focus-visible { outline: 2px solid var(--azul); outline-offset: 1px; }
+  #dlg-erro { min-height: 18px; color: var(--ruim); font-size: 12.5px; margin-top: 6px; }
+  .dlg-acoes { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+  .mini.salvar { background: var(--azul); border-color: var(--azul); color: #fff; }
+  .caixa { background: #fff; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+  .caixa h3, #dlg-av h3 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; color: var(--azul); letter-spacing: .4px; }
+  #dlg-av h4 { margin: 14px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: var(--cinza); }
+  .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .grade.g4 { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .grade label, label.largo { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--cinza); }
+  label.largo { margin-top: 10px; }
+  .grade input, .grade select, label.largo input, label.largo textarea { font: inherit; font-size: 14px; padding: 9px 10px; border: 1px solid #c4c9d2; border-radius: 8px; color: var(--preto); background: #fff; width: 100%; }
+  .grade input:focus-visible, .grade select:focus-visible, label.largo input:focus-visible, label.largo textarea:focus-visible { outline: 2px solid var(--azul); outline-offset: 1px; border-color: var(--azul); }
+  label.largo textarea { resize: vertical; }
+  .erro { min-height: 18px; color: var(--ruim); font-size: 12.5px; margin-top: 8px; } .erro.ok { color: var(--bom); }
+  .topo-caixa { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .topo-caixa h3 { margin: 0; }
+  .tab-av { width: 100%; min-width: 0; table-layout: auto; border-collapse: collapse; font-size: 13px; }
+  .tab-av th, .tab-av td { padding: 7px 6px; text-align: left; }
+  .tab-av thead th:first-child { width: auto; }
+  .tab-av tbody th { position: static; background: none; }
+  .tab-av td.acoes-av { text-align: right; }
+  .tab-av td.acoes-av .mini { margin-left: 6px; }
+  .mini.perigo { color: var(--ruim); border-color: #f3b4b4; }
+  .mini[disabled] { opacity: .5; pointer-events: none; }
+  #dlg-av { border: 0; border-radius: 12px; padding: 18px; width: min(94vw, 720px); max-height: 92vh; overflow: auto; box-shadow: 0 20px 50px rgba(0,0,0,.35); color: var(--preto); }
+  #dlg-av::backdrop { background: rgba(17,24,39,.55); }
+  #dlg-av details { margin-top: 14px; font-size: 12.5px; color: var(--cinza); }
+  #dlg-av summary { cursor: pointer; }
+  .previa { background: var(--fundo); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; margin-top: 12px; min-height: 18px; }
+  .aluno-item .info { color: var(--cinza); font-size: 12px; margin-top: 2px; }
+  h2.tit { font-size: 15px; text-transform: uppercase; letter-spacing: .4px; color: var(--azul); margin: 14px 0 10px; }
+  .vazio { background: #fff; border-radius: 10px; padding: 16px; color: var(--cinza); }
+  @media (prefers-reduced-motion: reduce) { #logo-abertura { animation: none; } #login, #abertura { transition: none; } }
+  @media print { #abertura { display: none !important; } }
+</style>
+</head>
+<body>
+
+<div id="abertura">
+  <img id="logo-abertura" src="logo-bruno-personal.png" alt="Bruno Personal Trainer">
+  <div id="login">
+    <h2>Avaliações <span>Físicas</span></h2>
+    <p>Entre para ver o seu relatório.</p>
+    <button type="button" class="btn aluno" data-papel="aluno">Sou aluno <small>· entrar com Google</small></button>
+    <button type="button" class="btn admin" data-papel="admin">Sou administrador <small>· entrar com Google</small></button>
+    <button type="button" class="link" id="abrir-email" style="margin-top:14px">Não tem conta Google? Entrar com e-mail e senha</button>
+    <form id="form-email" hidden>
+      <input type="email" id="f-email" placeholder="Seu e-mail" autocomplete="email" required>
+      <input type="password" id="f-senha" placeholder="Senha (mínimo 6 caracteres)" autocomplete="current-password" required minlength="6">
+      <button type="submit" class="btn aluno">Entrar como aluno</button>
+      <div class="links"><button type="button" class="link" id="criar-conta">Primeiro acesso: criar senha</button><button type="button" class="link" id="esqueci">Esqueci a senha</button></div>
+    </form>
+    <div id="login-msg" role="status"></div>
+    <button type="button" class="link" id="trocar-conta" hidden>Usar outra conta Google</button>
+  </div>
+</div>
+
+<!-- Painel do administrador -->
+<div class="wrap" id="admin" hidden>
+  <header>
+    <img src="logo-bruno-personal.png" alt="Bruno Personal Trainer">
+    <div>
+      <h1>Painel do <span>Administrador</span></h1>
+      <div class="sub" id="admin-conta"></div>
+    </div>
+  </header>
+  <div class="barra" style="margin-top:12px"><span></span><span class="acoes">
+    <label class="mini" id="importar-novo" for="arq-app">Importar do app</label>
+    <button type="button" class="mini salvar" id="novo-aluno">+ Novo aluno</button>
+    <button type="button" class="mini sair">Sair</button></span></div>
+  <input type="file" id="arq-app" accept=".json,application/json" hidden>
+
+  <div id="vista-lista">
+    <h2 class="tit">Alunos</h2>
+    <div id="lista-alunos"></div>
+  </div>
+
+  <div id="vista-editor" hidden>
+    <button type="button" class="mini" id="ed-voltar">← Alunos</button>
+    <h2 class="tit" id="ed-titulo">Novo aluno</h2>
+    <form id="form-aluno" class="caixa" novalidate>
+      <h3>Dados do aluno</h3>
+      <div class="grade">
+        <label>Nome completo *<input id="a-nome" autocomplete="off"></label>
+        <label>E-mail de acesso<input id="a-email" type="email" placeholder="conta Google ou e-mail do aluno" autocomplete="off"></label>
+        <label>Sexo *<select id="a-sexo"><option value="">Escolha</option><option>Masculino</option><option>Feminino</option></select></label>
+        <label>Data de nascimento<input id="a-nasc" type="date"></label>
+        <label>Idade (se não souber a data)<input id="a-idade" inputmode="numeric" placeholder="ex.: 44"></label>
+        <label>Altura (m) *<input id="a-altura" inputmode="decimal" placeholder="ex.: 1,70"></label>
+        <label>Meta de % de gordura<input id="a-meta" inputmode="decimal" placeholder="ex.: 14"></label>
+      </div>
+      <label class="largo">Observações do avaliador (aparecem na análise; uma por linha)<textarea id="a-obs" rows="4"></textarea></label>
+      <label class="largo">Observação da perimetria (opcional, aparece embaixo da tabela)<input id="a-notaperi" autocomplete="off"></label>
+      <div id="a-erro" class="erro" role="status"></div>
+      <div class="dlg-acoes"><button type="button" class="mini perigo" id="a-excluir" hidden>Excluir aluno</button><button type="submit" class="mini salvar">Salvar dados do aluno</button></div>
+    </form>
+    <div class="caixa" id="caixa-av">
+      <div class="topo-caixa"><h3>Avaliações</h3><span style="display:flex;gap:8px;flex-wrap:wrap"><label class="mini" id="importar-av" for="arq-app">Importar do app</label><button type="button" class="mini salvar" id="nova-av">+ Nova avaliação</button></span></div>
+      <div id="imp-msg" class="erro" role="status"></div>
+      <div id="lista-av"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Relatório -->
+<div class="wrap" id="app" hidden>
+  <div class="barra"><span id="conta"></span><span class="acoes">
+    <button type="button" class="mini" id="voltar" hidden>← Alunos</button>
+    <button type="button" class="mini sair">Sair</button></span></div>
+  <header>
+    <img src="logo-bruno-personal.png" alt="Bruno Personal Trainer">
+    <div>
+      <h1>Relatório de <span>Avaliações Físicas</span></h1>
+      <div class="sub" id="sub1"></div>
+      <div class="sub" id="sub2"></div>
+      <div class="sub"><b>Avaliador:</b> Bruno Dias de Oliveira — CREF 018926-G/RJ</div>
+    </div>
+  </header>
+  <div class="kpis" id="kpis"></div>
+  <div id="menus"></div>
+  <section class="menu" id="m-analise">
+    <button type="button" aria-expanded="false"><span>Análise e classificação/meta</span><span class="seta">▼</span></button>
+    <div class="painel"><div class="interno"><div class="pad" id="analise"></div></div></div>
+  </section>
+  <div class="area-pdf"><button type="button" class="btn-pdf" id="btn-pdf">Gerar PDF</button></div>
+  <footer>Bruno Personal Trainer — Bruno Dias de Oliveira · CREF 018926-G/RJ</footer>
+</div>
+
+<div class="fundo-card" id="fundo-card">
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="card-titulo">
+    <div class="card-topo">
+      <div><div class="secao" id="card-secao"></div><h3 id="card-titulo"></h3></div>
+      <button type="button" class="fechar" id="fechar" aria-label="Fechar">×</button>
+    </div>
+    <div class="nav">
+      <button type="button" class="seta-nav" id="ant" aria-label="Opção anterior">‹</button>
+      <div id="card-grafico"></div>
+      <button type="button" class="seta-nav" id="prox" aria-label="Próxima opção">›</button>
+    </div>
+    <div class="resumo" id="card-resumo"></div>
+  </div>
+</div>
+
+<dialog id="dlg-av">
+  <form id="form-av" novalidate>
+    <h3 id="av-titulo">Nova avaliação</h3>
+    <div class="grade">
+      <label>Data da avaliação *<input type="date" id="v-data"></label>
+      <label>Peso (kg) *<input id="v-peso" inputmode="decimal" placeholder="ex.: 83,5"></label>
+    </div>
+    <h4>Dobras cutâneas (mm) *</h4>
+    <div class="grade g4" id="v-dobras"></div>
+    <h4>Perimetria (cm) — preencha só o que mediu</h4>
+    <div class="grade g4" id="v-peri"></div>
+    <details><summary>Avançado</summary>
+      <div class="grade" style="margin-top:8px"><label>% de gordura informado (vazio = calcular pelo Pollock 7 dobras)<input id="v-gordura" inputmode="decimal"></label></div>
+    </details>
+    <div class="previa" id="v-previa"></div>
+    <div id="v-erro" class="erro" role="status"></div>
+    <div class="dlg-acoes"><button type="button" class="mini" id="v-cancelar">Cancelar</button><button type="submit" class="mini salvar">Salvar avaliação</button></div>
+  </form>
+</dialog>
+
+<div id="rel" aria-hidden="true"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, collection, getDocs, query, where, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+// Configuração pública do Firebase (identifica o projeto; a proteção dos dados fica nas regras do servidor)
+const fb = initializeApp({
+  apiKey: "AIzaSyBhWiWa5rigMf1eF2aDb9Ll_meunsc_-ak",
+  authDomain: "avaliacoes-bruno-personal.firebaseapp.com",
+  projectId: "avaliacoes-bruno-personal",
+  appId: "1:259216245419:web:2a0ed795170d82e31f2dee"
+});
+const auth = getAuth(fb), db = getFirestore(fb);
+const $ = id => document.getElementById(id);
+const semMov = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const guarda = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k,v) => { try { v==null ? localStorage.removeItem(k) : localStorage.setItem(k,v); } catch {} } };
+
+// ===== Abertura e login =====
+const abertura = $("abertura"), login = $("login"), msg = $("login-msg");
+const t0 = performance.now();
+const aposLogo = fn => setTimeout(fn, Math.max(0, (semMov ? 0 : 1300) - (performance.now() - t0)));
+function avisar(texto, ok){ msg.textContent = texto || ""; msg.classList.toggle("ok", !!ok); }
+function ocupado(sim){ login.querySelectorAll(".btn").forEach(b => b.disabled = sim); }
+function mostrarLogin(texto){
+  $("admin").hidden = true; $("app").hidden = true; abertura.hidden = false; abertura.classList.remove("sai");
+  ocupado(false); avisar(texto); $("trocar-conta").hidden = !auth.currentUser;
+  aposLogo(() => login.classList.add("visivel"));
+}
+function esconderAbertura(){ abertura.classList.add("sai"); setTimeout(() => { abertura.hidden = true; }, 480); }
+
+async function entrar(papel){
+  ocupado(true); avisar("Carregando…", true);
+  const u = auth.currentUser, email = (u.email || "").toLowerCase();
+  try {
+    if (papel === "admin") {
+      const snap = await getDocs(collection(db, "alunos"));
+      guarda.set("papel", "admin"); abrirAdmin(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } else {
+      const snap = await getDocs(query(collection(db, "alunos"), where("email", "==", email)));
+      if (snap.empty) return mostrarLogin(`Não encontrei avaliações para ${email}. Peça ao Bruno para cadastrar este e-mail.`);
+      const al = { id: snap.docs[0].id, ...snap.docs[0].data() };
+      if (!(al.avaliacoes || []).length) return mostrarLogin("Você ainda não tem avaliações lançadas. Fale com o Bruno.");
+      guarda.set("papel", "aluno"); abrirRelatorio(al, false);
+    }
+  } catch (e) {
+    guarda.set("papel", null);
+    mostrarLogin(e.code === "permission-denied" ? `A conta ${email} não é a do administrador.` : "Não consegui carregar os dados. Verifique a internet e tente de novo.");
+  }
+}
+// E-mail e senha (para quem não tem conta Google)
+const formEmail = $("form-email");
+const erroEmail = e => ({
+  "auth/invalid-credential": "E-mail ou senha incorretos.", "auth/wrong-password": "E-mail ou senha incorretos.", "auth/user-not-found": "E-mail ou senha incorretos.",
+  "auth/email-already-in-use": "Este e-mail já tem senha criada. Use “Entrar como aluno” ou “Esqueci a senha”.",
+  "auth/weak-password": "A senha precisa ter pelo menos 6 caracteres.", "auth/invalid-email": "E-mail inválido.",
+  "auth/too-many-requests": "Muitas tentativas. Espere alguns minutos e tente de novo.", "auth/operation-not-allowed": "O login por e-mail e senha ainda não está ativado."
+}[e.code] || "Não foi possível entrar. Tente de novo.");
+const campos = () => ({ email: $("f-email").value.trim().toLowerCase(), senha: $("f-senha").value });
+async function pedirConfirmacao(u){
+  try { await sendEmailVerification(u); } catch {}
+  await signOut(auth); ocupado(false);
+  avisar(`Enviamos um link de confirmação para ${u.email}. Abra o e-mail, clique no link e depois entre aqui.`, true);
+}
+$("abrir-email").addEventListener("click", () => { formEmail.hidden = !formEmail.hidden; if (!formEmail.hidden) $("f-email").focus(); });
+formEmail.addEventListener("submit", async ev => {
+  ev.preventDefault(); const { email, senha } = campos(); avisar(""); ocupado(true);
+  try {
+    if (auth.currentUser) await signOut(auth);
+    const { user } = await signInWithEmailAndPassword(auth, email, senha);
+    if (!user.emailVerified) return pedirConfirmacao(user);
+    await entrar("aluno");
+  } catch (e) { ocupado(false); avisar(erroEmail(e)); }
+});
+$("criar-conta").addEventListener("click", async () => {
+  if (!formEmail.reportValidity()) return;
+  const { email, senha } = campos(); avisar(""); ocupado(true);
+  try {
+    if (auth.currentUser) await signOut(auth);
+    const { user } = await createUserWithEmailAndPassword(auth, email, senha);
+    await pedirConfirmacao(user);
+  } catch (e) { ocupado(false); avisar(erroEmail(e)); }
+});
+$("esqueci").addEventListener("click", async () => {
+  const { email } = campos();
+  if (!email) { avisar("Digite o seu e-mail acima e clique de novo em “Esqueci a senha”."); return $("f-email").focus(); }
+  try { await sendPasswordResetEmail(auth, email); avisar(`Se ${email} tiver senha criada, enviamos um link para trocar a senha.`, true); }
+  catch (e) { avisar(erroEmail(e)); }
+});
+
+login.querySelectorAll(".btn[data-papel]").forEach(b => b.addEventListener("click", async () => {
+  const papel = b.dataset.papel; avisar("");
+  try {
+    if (!auth.currentUser) { ocupado(true); await signInWithPopup(auth, new GoogleAuthProvider()); }
+    await entrar(papel);
+  } catch (e) {
+    ocupado(false);
+    avisar(e.code === "auth/popup-blocked" ? "O navegador bloqueou a janela do Google. Permita pop-ups e tente de novo."
+         : e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request" ? "" : "Não foi possível entrar com o Google. Tente de novo.");
+  }
+}));
+$("trocar-conta").addEventListener("click", async () => { await signOut(auth); guarda.set("papel", null); mostrarLogin(""); });
+document.querySelectorAll(".sair").forEach(b => b.addEventListener("click", async () => { guarda.set("papel", null); await signOut(auth); location.reload(); }));
+
+let primeiro = true;
+onAuthStateChanged(auth, u => {
+  if (!primeiro) return; primeiro = false;
+  const papel = guarda.get("papel");
+  if (u && papel) aposLogo(() => entrar(papel)); else mostrarLogin("");
+});
+
+// ===== Modelo de dados: aluno + avaliações =====
+const DOBRAS = [["sub","Subescapular"],["tri","Tricipital"],["pei","Peitoral"],["axi","Axilar média"],["abd","Abdominal"],["sup","Supra-ilíaca"],["cox","Coxa"]];
+const PERI = [["g","Tronco"],["torax","Tórax"],["ombro","Ombro"],["cintura","Cintura"],["abdomen","Abdômen"],["quadril","Quadril"],
+  ["g","Membros superiores"],["bracoRelD","Braço relaxado D"],["bracoRelE","Braço relaxado E"],["bracoConD","Braço contraído D"],["bracoConE","Braço contraído E"],["antD","Antebraço D"],["antE","Antebraço E"],
+  ["g","Membros inferiores"],["coxaD","Coxa D"],["coxaE","Coxa E"],["pantD","Panturrilha D"],["pantE","Panturrilha E"]];
+const num = s => { s = String(s ?? "").trim().replace(",", "."); if (!s) return null; const v = Number(s); return Number.isFinite(v) ? v : NaN; };
+const isoParaBr = iso => iso.split("-").reverse().join("/");
+const anosEntre = (de, ate) => { const a = new Date(de+"T12:00"), b = new Date(ate+"T12:00"); let x = b.getFullYear()-a.getFullYear(); if (b.getMonth()<a.getMonth() || (b.getMonth()===a.getMonth() && b.getDate()<a.getDate())) x--; return x; };
+const hojeIso = () => { const d = new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10); };
+function idadeEm(al, iso){ if (al.nascimento) return anosEntre(al.nascimento, iso); const v = parseInt(al.idade, 10); return Number.isFinite(v) ? v : null; }
+function idadeTexto(al){ const v = idadeEm(al, hojeIso()); return v == null ? "—" : v + " anos"; }
+// Pollock 7 dobras (Jackson & Pollock) + fórmula de Siri
+function pollock(sexo, soma, idade){
+  if (soma == null || idade == null) return null;
+  const dc = sexo === "Feminino" ? 1.097 - 0.00046971*soma + 0.00000056*soma*soma - 0.00012828*idade
+                                 : 1.112 - 0.00043499*soma + 0.00000055*soma*soma - 0.00028826*idade;
+  return (4.95/dc - 4.5) * 100;
+}
+function calcular(al, a){
+  const S = DOBRAS.reduce((t,[k]) => t + (a.dobras?.[k] ?? 0), 0);
+  const g = a.gordura ?? pollock(al.sexo, S, a.idade ?? idadeEm(al, a.data));
+  const mg = a.mg ?? (g == null ? null : a.peso*g/100), mm = a.mm ?? (mg == null ? null : a.peso - mg);
+  return { S, g, mg, mm };
+}
+
+// ===== Painel do administrador =====
+let alunos = [], edit = null, avIdx = null;
+const ordenar = l => l.sort((a,b) => (a.nome||"").localeCompare(b.nome||"", "pt-BR"));
+const ordenarAv = l => [...(l||[])].sort((a,b) => a.data < b.data ? -1 : a.data > b.data ? 1 : 0);
+async function recarregar(){ const snap = await getDocs(collection(db, "alunos")); alunos = ordenar(snap.docs.map(d => ({ id: d.id, ...d.data() }))); }
+function abrirAdmin(lista){
+  if (lista) alunos = ordenar(lista);
+  $("admin-conta").innerHTML = `<b>Conta:</b> ${esc(auth.currentUser?.email)}`;
+  $("lista-alunos").innerHTML = alunos.length ? alunos.map(a => { const av = ordenarAv(a.avaliacoes), n = av.length;
+    return `<div class="aluno-item"><div><b>${esc(a.nome)}</b>
+      <div class="em ${a.email?"":"sem"}">${a.email ? esc(a.email) : "Sem e-mail de acesso: o aluno ainda não consegue entrar"}</div>
+      <div class="info">${n ? `${n} ${n>1?"avaliações":"avaliação"} · última em ${isoParaBr(av[n-1].data)}` : "Nenhuma avaliação lançada"}</div></div>
+      <span class="acoes" style="display:flex;gap:8px"><button type="button" class="mini" data-editar="${esc(a.id)}">Editar</button><button type="button" class="mini" data-abrir="${esc(a.id)}" ${n?"":"disabled"}>Abrir relatório</button></span></div>`; }).join("")
+    : `<div class="vazio">Nenhum aluno cadastrado ainda. Clique em “+ Novo aluno” para adicionar o primeiro.</div>`;
+  $("vista-editor").hidden = true; $("vista-lista").hidden = false; $("novo-aluno").hidden = false; $("importar-novo").hidden = false;
+  $("app").hidden = true; $("admin").hidden = false; esconderAbertura(); scrollTo(0,0);
+}
+$("lista-alunos").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const a = alunos.find(x => x.id === (b.dataset.abrir ?? b.dataset.editar));
+  if (b.dataset.abrir != null) abrirRelatorio(a, true); else abrirEditor(a);
+});
+$("novo-aluno").addEventListener("click", () => abrirEditor(null));
+$("ed-voltar").addEventListener("click", () => abrirAdmin());
+
+function abrirEditor(a){
+  edit = a; const v = (id, x) => $(id).value = x ?? "";
+  $("ed-titulo").textContent = a ? a.nome : "Novo aluno";
+  v("a-nome", a?.nome); v("a-email", a?.email); v("a-sexo", a?.sexo); v("a-nasc", a?.nascimento);
+  v("a-idade", a?.nascimento ? "" : a?.idade); v("a-altura", a?.altura != null ? f(a.altura, 2) : "");
+  v("a-meta", a?.meta != null ? String(a.meta).replace(".", ",") : ""); v("a-obs", a?.observacoes); v("a-notaperi", a?.notaPerimetria);
+  $("a-erro").textContent = ""; $("imp-msg").textContent = ""; $("a-excluir").hidden = !a;
+  renderAv();
+  $("vista-lista").hidden = true; $("novo-aluno").hidden = true; $("importar-novo").hidden = true; $("vista-editor").hidden = false; scrollTo(0,0);
+}
+function renderAv(){
+  const caixa = $("caixa-av");
+  $("importar-av").hidden = !edit;
+  if (!edit) { caixa.querySelector("#nova-av").disabled = true; $("lista-av").innerHTML = `<p class="dica">Salve os dados do aluno para poder lançar avaliações.</p>`; return; }
+  caixa.querySelector("#nova-av").disabled = false;
+  const av = ordenarAv(edit.avaliacoes);
+  $("lista-av").innerHTML = av.length ? `<div class="rolagem"><table class="tab-av"><thead><tr><th>Data</th><th>Peso</th><th>Soma 7 dobras</th><th>% gordura</th><th></th></tr></thead><tbody>${
+    av.map(a => { const c = calcular(edit, a); return `<tr><th>${isoParaBr(a.data)}</th><td>${f(a.peso,1)} kg</td><td>${f(c.S,0)} mm</td><td>${f(c.g,2)}%${a.gordura!=null?" <small>(informado)</small>":""}</td>
+      <td class="acoes-av"><button type="button" class="mini" data-ed-av="${a.data}">Editar</button><button type="button" class="mini perigo" data-del-av="${a.data}">Excluir</button></td></tr>`; }).join("")}</tbody></table></div>`
+    : `<p class="dica">Nenhuma avaliação lançada ainda. Clique em “+ Nova avaliação”.</p>`;
+}
+function salvoLocal(id, dados){
+  edit = { id, ...dados };
+  const i = alunos.findIndex(x => x.id === id); if (i >= 0) alunos[i] = edit; else alunos.push(edit);
+  ordenar(alunos);
+}
+$("form-aluno").addEventListener("submit", async ev => {
+  ev.preventDefault(); const erro = $("a-erro"); erro.classList.remove("ok");
+  const nome = $("a-nome").value.trim(), email = $("a-email").value.trim().toLowerCase(), sexo = $("a-sexo").value, nascimento = $("a-nasc").value;
+  const idade = num($("a-idade").value), altura = num($("a-altura").value), meta = num($("a-meta").value);
+  const falha = !nome ? "Preencha o nome." : !sexo ? "Escolha o sexo." : email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) ? "E-mail inválido."
+    : !nascimento && (idade == null || Number.isNaN(idade) || idade < 5 || idade > 110) ? "Preencha a data de nascimento ou a idade."
+    : altura == null || Number.isNaN(altura) || altura < 1 || altura > 2.5 ? "Altura inválida. Use metros, ex.: 1,70."
+    : meta != null && (Number.isNaN(meta) || meta < 3 || meta > 50) ? "Meta de % de gordura inválida."
+    : email && alunos.some(x => x.email === email && x.id !== edit?.id) ? "Este e-mail já está em outro aluno." : "";
+  if (falha) { erro.textContent = falha; return; }
+  const id = edit?.id || (nome.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40) || "aluno") + "-" + Math.random().toString(36).slice(2,6);
+  const { id: _x, ...antes } = edit || {};
+  const dados = { ...antes, nome, email, sexo, nascimento: nascimento || null, idade: nascimento ? null : idade, altura, meta,
+    observacoes: $("a-obs").value.trim(), notaPerimetria: $("a-notaperi").value.trim(), protocolo: "Pollock 7 dobras", avaliacoes: edit?.avaliacoes || [] };
+  try {
+    await setDoc(doc(db, "alunos", id), dados); salvoLocal(id, dados);
+    $("ed-titulo").textContent = nome; $("a-excluir").hidden = false; renderAv();
+    erro.textContent = "Dados salvos."; erro.classList.add("ok");
+  } catch { erro.textContent = "Não consegui salvar. Verifique a internet e tente de novo."; }
+});
+$("a-excluir").addEventListener("click", async () => {
+  if (!edit || !confirm(`Excluir ${edit.nome} e todas as avaliações dele? Isso não pode ser desfeito.`)) return;
+  try { await deleteDoc(doc(db, "alunos", edit.id)); alunos = alunos.filter(x => x.id !== edit.id); edit = null; abrirAdmin(); }
+  catch { $("a-erro").textContent = "Não consegui excluir o aluno."; }
+});
+
+// Formulário de avaliação
+const campo = (pre, k, nome) => `<label>${nome}<input id="${pre}-${k}" inputmode="decimal"></label>`;
+$("v-dobras").innerHTML = DOBRAS.map(([k,nome]) => campo("vd", k, nome)).join("");
+$("v-peri").innerHTML = PERI.filter(([k]) => k !== "g").map(([k,nome]) => campo("vp", k, nome)).join("");
+function lerAv(){
+  const r = { data: $("v-data").value, peso: num($("v-peso").value), gordura: num($("v-gordura").value), dobras: {}, peri: {} };
+  DOBRAS.forEach(([k]) => r.dobras[k] = num($("vd-"+k).value));
+  PERI.forEach(([k]) => { if (k !== "g") r.peri[k] = num($("vp-"+k).value); });
+  return r;
+}
+function previa(){
+  if (!edit) return;
+  const r = lerAv(), ok = DOBRAS.every(([k]) => r.dobras[k] != null && !Number.isNaN(r.dobras[k]));
+  if (!ok) { $("v-previa").textContent = "Preencha as 7 dobras para ver o % de gordura calculado."; return; }
+  const S = DOBRAS.reduce((t,[k]) => t + r.dobras[k], 0), idade = r.data ? idadeEm(edit, r.data) : null;
+  const g = r.gordura != null && !Number.isNaN(r.gordura) ? r.gordura : pollock(edit.sexo, S, idade);
+  const pesoOk = r.peso != null && !Number.isNaN(r.peso) && r.peso > 0;
+  $("v-previa").innerHTML = `Soma das 7 dobras: <b>${f(S,0)} mm</b>` + (g == null ? " · escolha a data para calcular o % de gordura"
+    : ` · % de gordura: <b>${f(g,2)}%</b>` + (pesoOk ? ` · massa gorda: <b>${f(r.peso*g/100,2)} kg</b> · massa magra: <b>${f(r.peso - r.peso*g/100,2)} kg</b>` : ""));
+}
+$("form-av").addEventListener("input", previa);
+function abrirAv(data){
+  const avs = edit.avaliacoes || []; avIdx = data == null ? null : avs.findIndex(a => a.data === data);
+  const a = avIdx == null ? null : avs[avIdx], v = (id, x) => $(id).value = x == null ? "" : String(x).replace(".", ",");
+  $("av-titulo").textContent = a ? `Editar avaliação de ${isoParaBr(a.data)}` : `Nova avaliação — ${edit.nome}`;
+  $("v-data").value = a?.data || hojeIso(); v("v-peso", a?.peso); v("v-gordura", a?.gordura);
+  DOBRAS.forEach(([k]) => v("vd-"+k, a?.dobras?.[k]));
+  PERI.forEach(([k]) => { if (k !== "g") v("vp-"+k, a?.peri?.[k]); });
+  $("v-erro").textContent = ""; previa(); $("dlg-av").showModal(); $("v-peso").focus();
+}
+$("nova-av").addEventListener("click", () => abrirAv(null));
+$("v-cancelar").addEventListener("click", () => $("dlg-av").close());
+$("lista-av").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.edAv) return abrirAv(b.dataset.edAv);
+  const data = b.dataset.delAv; if (!data || !confirm(`Excluir a avaliação de ${isoParaBr(data)}? Isso não pode ser desfeito.`)) return;
+  const avs = (edit.avaliacoes || []).filter(a => a.data !== data);
+  try { await updateDoc(doc(db, "alunos", edit.id), { avaliacoes: avs }); edit.avaliacoes = avs; salvoLocal(edit.id, (({id, ...r}) => r)(edit)); renderAv(); }
+  catch { alert("Não consegui excluir a avaliação."); }
+});
+$("form-av").addEventListener("submit", async ev => {
+  ev.preventDefault(); const erro = $("v-erro"), r = lerAv();
+  const ruim = x => x != null && (Number.isNaN(x) || x < 0);
+  const avs = [...(edit.avaliacoes || [])], antiga = avIdx == null ? null : avs[avIdx];
+  const falha = !r.data ? "Escolha a data da avaliação."
+    : r.peso == null || Number.isNaN(r.peso) || r.peso < 20 || r.peso > 300 ? "Peso inválido."
+    : DOBRAS.some(([k]) => r.dobras[k] == null) ? "Preencha as 7 dobras cutâneas."
+    : DOBRAS.some(([k]) => ruim(r.dobras[k]) || r.dobras[k] > 80) ? "Há uma dobra com valor inválido."
+    : Object.values(r.peri).some(x => ruim(x) || x > 250) ? "Há uma medida de perimetria com valor inválido."
+    : r.gordura != null && (Number.isNaN(r.gordura) || r.gordura < 2 || r.gordura > 60) ? "% de gordura informado inválido."
+    : avs.some((a,i) => a.data === r.data && i !== avIdx) ? `Já existe uma avaliação em ${isoParaBr(r.data)}.` : "";
+  if (falha) { erro.textContent = falha; return; }
+  const nova = { data: r.data, peso: r.peso, dobras: r.dobras, peri: Object.fromEntries(Object.entries(r.peri).filter(([,x]) => x != null)) };
+  if (r.gordura != null) nova.gordura = r.gordura;
+  // Mantém massa gorda/magra registradas só se peso e % de gordura não mudaram
+  if (antiga && antiga.peso === nova.peso && (antiga.gordura ?? null) === (nova.gordura ?? null)) {
+    if (antiga.mg != null) nova.mg = antiga.mg; if (antiga.mm != null) nova.mm = antiga.mm;
+  }
+  if (avIdx == null) avs.push(nova); else avs[avIdx] = nova;
+  const ord = ordenarAv(avs);
+  try { await updateDoc(doc(db, "alunos", edit.id), { avaliacoes: ord }); edit.avaliacoes = ord; salvoLocal(edit.id, (({id, ...x}) => x)(edit)); $("dlg-av").close(); renderAv(); }
+  catch { erro.textContent = "Não consegui salvar a avaliação. Verifique a internet e tente de novo."; }
+});
+$("voltar").addEventListener("click", () => { fechar(); abrirAdmin(); });
+
+// ===== Importar do app de personal (arquivo gerado por "Exportar para o relatório") =====
+const MAPA_DOBRAS = { peitoral:"pei", axilarMedia:"axi", triceps:"tri", subescapular:"sub", abdominal:"abd", suprailiaca:"sup", coxa:"cox" };
+const MAPA_PERI = { torax:"torax", cintura:"cintura", abdomen:"abdomen", quadril:"quadril", ombro:"ombro",
+  bracoDireitoRelax:"bracoRelD", bracoEsquerdoRelax:"bracoRelE", bracoDireitoContraido:"bracoConD", bracoEsquerdoContraido:"bracoConE",
+  antebracoDireito:"antD", antebracoEsquerdo:"antE", coxaDireita:"coxaD", coxaEsquerda:"coxaE", panturrilhaDireita:"pantD", panturrilhaEsquerda:"pantE" };
+const positivo = v => { const x = Number(v); return Number.isFinite(x) && x > 0 ? x : null; };
+function lerPacote(texto){
+  const p = JSON.parse(texto);
+  if (p?.formato !== "bruno-personal-avaliacoes" || !Array.isArray(p.avaliacoes)) throw new Error("formato");
+  const ok = [], ignoradas = [];
+  p.avaliacoes.forEach(a => {
+    const data = /^\d{4}-\d{2}-\d{2}$/.test(a?.date || "") ? a.date : null, peso = positivo(a?.weight);
+    const dobras = {}; Object.entries(MAPA_DOBRAS).forEach(([de, para]) => dobras[para] = positivo(a?.skinfolds?.[de]));
+    if (!data || !peso || Object.values(dobras).some(v => v == null)) { ignoradas.push(data ? isoParaBr(data) : "sem data"); return; }
+    const peri = {}; Object.entries(MAPA_PERI).forEach(([de, para]) => { const v = positivo(a?.perimeters?.[de]); if (v != null) peri[para] = v; });
+    const av = { data, peso, dobras, peri }, idade = positivo(a.age); if (idade) av.idade = Math.round(idade);
+    ok.push({ av, sexo: a.sex === "F" ? "Feminino" : "Masculino", altura: positivo(a.height) });
+  });
+  return { nome: String(p.aluno?.nome || "").trim(), nascimento: /^\d{4}-\d{2}-\d{2}$/.test(p.aluno?.nascimento || "") ? p.aluno.nascimento : null, ok, ignoradas };
+}
+const semAcento = s => (s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim();
+$("arq-app").addEventListener("change", async e => {
+  const arq = e.target.files[0]; e.target.value = ""; if (!arq) return;
+  const naLista = !$("vista-lista").hidden, msg = $("imp-msg"); msg.classList.remove("ok"); msg.textContent = "";
+  let pac; try { pac = lerPacote(await arq.text()); } catch { return alert("Este arquivo não veio do botão “Exportar para o relatório” do app de personal."); }
+  if (!pac.ok.length) return alert(`O arquivo não tem nenhuma avaliação com peso e as 7 dobras preenchidos${pac.ignoradas.length ? ` (${pac.ignoradas.length} incompletas)` : ""}.`);
+  let alvo = naLista ? null : edit;
+  if (naLista) {
+    const mesmo = alunos.find(x => semAcento(x.nome) === semAcento(pac.nome));
+    if (mesmo && confirm(`Já existe ${mesmo.nome} no painel. Importar as avaliações para esse aluno?\n\nOK = importar para ${mesmo.nome}\nCancelar = criar outro aluno`)) alvo = mesmo;
+  }
+  const ultima = pac.ok[pac.ok.length - 1], datas = new Set((alvo?.avaliacoes || []).map(a => a.data));
+  const novas = pac.ok.filter(x => !datas.has(x.av.data)).map(x => x.av), repetidas = pac.ok.length - novas.length;
+  const resumo = `${novas.length} avaliação(ões) nova(s) para importar` + (repetidas ? `; ${repetidas} com data já lançada serão mantidas como estão` : "") + (pac.ignoradas.length ? `; ${pac.ignoradas.length} incompleta(s) ficarão de fora (${pac.ignoradas.join(", ")})` : "") + ".";
+  if (!novas.length) return alert(`Nada novo para importar. ${resumo}`);
+  if (!confirm(`${alvo ? alvo.nome : `Novo aluno: ${pac.nome || "(sem nome)"}`}\n\n${resumo}\n\nConfirmar a importação?`)) return;
+  try {
+    let id, dados;
+    if (alvo) {
+      ({ id, ...dados } = alvo);
+      dados = { ...dados, avaliacoes: ordenarAv([...(alvo.avaliacoes || []), ...novas]) };
+      if (!dados.altura && ultima.altura) dados.altura = ultima.altura / 100;
+      if (!dados.sexo) dados.sexo = ultima.sexo;
+      if (!dados.nascimento && dados.idade == null && pac.nascimento) dados.nascimento = pac.nascimento;
+    } else {
+      const nome = pac.nome || "Aluno importado";
+      id = (semAcento(nome).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40) || "aluno") + "-" + Math.random().toString(36).slice(2,6);
+      dados = { nome, email: "", sexo: ultima.sexo, nascimento: pac.nascimento, idade: pac.nascimento ? null : (ultima.av.idade ?? null),
+        altura: ultima.altura ? ultima.altura / 100 : null, meta: null, observacoes: "", notaPerimetria: "", protocolo: "Pollock 7 dobras", avaliacoes: ordenarAv(novas) };
+    }
+    await setDoc(doc(db, "alunos", id), dados); salvoLocal(id, dados);
+    abrirEditor(edit);
+    const faltam = [!edit.email && "e-mail de acesso", !edit.altura && "altura", !edit.nascimento && edit.idade == null && "data de nascimento"].filter(Boolean);
+    msg.textContent = `Importadas ${novas.length} avaliação(ões).` + (faltam.length ? ` Complete nos dados do aluno: ${faltam.join(", ")}.` : "");
+    msg.classList.add("ok");
+  } catch { alert("Não consegui salvar a importação. Verifique a internet e tente de novo."); }
+});
+
+// ===== Relatório =====
+let AL = null, D = [], SECOES = [], EXTRA = {}, KPI_FINAL = "";
+const f = (v,d=1) => v==null ? "—" : v.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const curta = s => s.slice(0,6)+s.slice(8);
+const sinal = x => x>1e-9?"+":x<-1e-9?"−":"";
+const classe = (x,bom) => bom==null||Math.abs(x)<1e-9 ? "neu" : ((x<0)===bom ? "up":"down");
+const pontas = arr => { const i=arr.findIndex(v=>v!=null), j=arr.length-1-[...arr].reverse().findIndex(v=>v!=null); return [i,j]; };
+const obs = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("visivel"); obs.unobserve(e.target); } }),{ threshold:.15 });
+const revelar = (els,passo)=>els.forEach((el,i)=>{ el.classList.remove("visivel"); el.classList.add("revela"); el.style.setProperty("--atraso",(i*passo).toFixed(2)+"s"); obs.unobserve(el); requestAnimationFrame(()=>obs.observe(el)); });
+
+function montarDados(al){
+  const av = ordenarAv(al.avaliacoes), n = av.length - 1, D = av.map(a => isoParaBr(a.data));
+  const c = av.map(a => calcular(al, a)), col = fn => av.map((a,i) => { const v = fn(a, c[i]); return v == null || Number.isNaN(v) ? null : v; });
+  const peso = col(a => a.peso), g = col((a,x) => x.g), mg = col((a,x) => x.mg), mm = col((a,x) => x.mm), S = col((a,x) => x.S);
+  const P = k => col(a => a.peri?.[k] ?? null), cint = P("cintura"), quad = P("quadril");
+  const imc = al.altura ? peso.map(p => p/(al.altura*al.altura)) : peso.map(() => null);
+  const rcq = cint.map((x,i) => x != null && quad[i] ? x/quad[i] : null);
+  const temDados = l => l[0] === "g" || l[1].some(v => v != null);
+  const comp = [["Peso (kg)",peso,1,"kg",null,"#1d4ed8"],["% Gordura",g,2,"%",true,"#c2410c",true],["Massa gorda (kg)",mg,2,"kg",true,"#b91c1c",true],
+    ["Massa magra (kg)",mm,2,"kg",false,"#15803d"],["Soma 7 dobras (mm)",S,0,"mm",true,"#111827",true],["IMC",imc,2,"",null,"#7c3aed"],["RCQ (cintura ÷ quadril)",rcq,2,"",true,"#0e7490"]];
+  const dob = DOBRAS.map(([k,nome]) => [nome, col(a => a.dobras?.[k] ?? null), 0, "mm", true]).concat([["Soma", S, 0, "mm", true, "#111827"]]);
+  let peri = PERI.map(([k,nome]) => k === "g" ? ["g", nome] : [nome, P(k), 1, "cm", k === "cintura" || k === "abdomen" ? true : null]).filter(temDados);
+  peri = peri.filter((l,i) => l[0] !== "g" || (peri[i+1] && peri[i+1][0] !== "g"));
+  const secoes = [
+    { id:"comp", titulo:"Composição corporal", col:"Indicador", colPdf:"Indicador", tituloPdf:"Composição corporal — todas as avaliações", notaPdf:true,
+      nota:`Δ = última avaliação (${D[n]}) menos a primeira (${D[0]}). Em azul, o menor valor da série de % gordura, massa gorda e soma das dobras.` + (al.altura ? ` IMC calculado com estatura de ${f(al.altura,2)} m.` : ""),
+      linhas: comp.filter(temDados) },
+    { id:"dobras", titulo:"Dobras cutâneas", col:"Dobra (mm)", colPdf:"Dobra", tituloPdf:"Dobras cutâneas (mm)", nota:"Valores em milímetros.", notaPdf:false, linhas: dob }
+  ];
+  if (peri.length) secoes.push({ id:"peri", titulo:"Perimetria", col:"Medida (cm)", colPdf:"Medida", tituloPdf:"Perimetria (cm)", notaPdf:true,
+    nota: "“—” = medida não coletada naquela avaliação." + (al.notaPerimetria ? " " + al.notaPerimetria : ""), linhas: peri });
+  let notaGraficos = "";
+  if (n >= 2) { const m = av.slice(1).map((a,i) => Math.max(1, Math.round((new Date(a.data) - new Date(av[i].data)) / 864e5 / 30.44))), lo = Math.min(...m), hi = Math.max(...m);
+    notaGraficos = `Os pontos estão espaçados igualmente; ${lo === hi ? `as avaliações foram feitas a cada ${lo} ${lo>1?"meses":"mês"}` : `os intervalos reais entre avaliações variam de ${lo} a ${hi} meses`}.`; }
+  return { D, secoes, kpis:[["Peso",0,null],["Gordura",1,true],["Massa magra",3,false],["Massa gorda",2,true]],
+    graficosPdf:[["Peso (kg)",0,"#1d4ed8"],["% de gordura",1,"#c2410c"],["Massa magra (kg)",3,"#15803d"],["Massa gorda (kg)",2,"#b91c1c"],["Soma das 7 dobras (mm)",4,"#111827"],["IMC",5,"#7c3aed"]],
+    notaGraficos, fontes: al.fontes || "Dados lançados pelo avaliador", analise: gerarAnalise(al, av, D, { peso, g, mg, mm, S, imc, rcq, P }) };
+}
+// Análise automática + observações do avaliador
+function gerarAnalise(al, av, D, x){
+  const n = av.length - 1, ul = itens => `<ul>${itens.filter(Boolean).map(t => `<li>${t}</li>`).join("")}</ul>`;
+  const dv = (v, d, u) => `${sinal(v)}${f(Math.abs(v), d)}${u}`, mesAno = s => s.slice(3);
+  const caixa = (t, corpo, est) => `<div class="box"${est ? ` style="${est}"` : ""}><h4>${t}</h4>${corpo}</div>`;
+  const nomeDob = Object.fromEntries(DOBRAS);
+  const difDobras = (i, j) => DOBRAS.map(([k]) => [k, (av[j].dobras?.[k] ?? 0) - (av[i].dobras?.[k] ?? 0)]).filter(([,v]) => Math.abs(v) > 0).sort((a,b) => Math.abs(b[1]) - Math.abs(a[1]));
+  let html = "";
+  if (n >= 1) {
+    const { peso, g, mg, mm, S, P } = x, gv = g.filter(v => v != null), mmMax = Math.max(...mm.filter(v => v != null)), iMax = mm.indexOf(mmMax);
+    const cint = P("cintura"), cxD = P("coxaD"), cxE = P("coxaE"), d0 = difDobras(0, n)[0];
+    const ini = ul([
+      g[0] != null && g[n] != null && `<b>% de gordura:</b> ${f(g[0],1)}% → ${f(g[n],1)}% (${dv(g[n]-g[0],1," ponto")}). Oscilou entre ${f(Math.min(...gv),1)}% e ${f(Math.max(...gv),1)}% no período.`,
+      `<b>Peso:</b> ${f(peso[0],1)} kg → ${f(peso[n],1)} kg (${dv(peso[n]-peso[0],1," kg")}).`,
+      mg[0] != null && `<b>Massa gorda:</b> ${f(mg[0],1)} kg → ${f(mg[n],1)} kg (${dv(mg[n]-mg[0],1," kg")}). <b>Massa magra:</b> ${f(mm[0],1)} kg → ${f(mm[n],1)} kg (${dv(mm[n]-mm[0],1," kg")})` +
+        (iMax > 0 && iMax < n && mmMax - Math.max(mm[0], mm[n]) >= 0.5 ? `, depois de um pico de ${f(mmMax,1)} kg em ${mesAno(D[iMax])}.` : "."),
+      `<b>Soma das 7 dobras:</b> ${f(S[0],0)} mm → ${f(S[n],0)} mm (${dv(S[n]-S[0],0," mm")}).` + (d0 ? ` A ${nomeDob[d0[0]].toLowerCase()} foi de ${f(av[0].dobras[d0[0]],0)} para ${f(av[n].dobras[d0[0]],0)} mm.` : ""),
+      cint[0] != null && cint[n] != null && (Math.abs(cint[n]-cint[0]) < 0.05 ? `<b>Cintura:</b> ${f(cint[n],1)} cm, igual à primeira avaliação.` : `<b>Cintura:</b> ${f(cint[0],1)} → ${f(cint[n],1)} cm (${dv(cint[n]-cint[0],1," cm")}).`),
+      cxD[0] != null && cxD[n] != null && cxE[0] != null && cxE[n] != null && `<b>Coxas:</b> D ${f(cxD[0],1)} → ${f(cxD[n],1)} cm; E ${f(cxE[0],1)} → ${f(cxE[n],1)} cm.`
+    ]);
+    const p = n - 1, dP = peso[n]-peso[p], dMM = mm[n]-mm[p];
+    const medidas = [["cintura","Cintura"],["abdomen","abdômen"],["quadril","quadril"],["ombro","ombro"],["torax","tórax"]]
+      .map(([k,nome]) => { const a = P(k); return a[p] != null && a[n] != null && Math.abs(a[n]-a[p]) > 1e-9 ? `<b>${nome}:</b> ${dv(a[n]-a[p],1," cm")}` : null; }).filter(Boolean);
+    const top = difDobras(p, n).slice(0, 2);
+    const ciclo = ul([
+      `<b>Peso:</b> ${dv(dP,1," kg")} (${f(peso[p],1)} → ${f(peso[n],1)} kg).`,
+      g[p] != null && `<b>% de gordura:</b> ${f(g[p],1)}% → ${f(g[n],1)}%. <b>Massa gorda:</b> ${dv(mg[n]-mg[p],1," kg")}.`,
+      mm[p] != null && `<b>Massa magra:</b> ${dv(dMM,1," kg")} (${f(mm[p],1)} → ${f(mm[n],1)} kg)` +
+        (dP < -0.05 && dMM < -0.05 ? ` — ${f(Math.min(100, -dMM/-dP*100),0)}% do peso perdido foi massa magra; ponto de atenção para o próximo ciclo.` : dMM > 0.05 ? " — ganho de massa magra." : "."),
+      medidas.length && medidas.join("; ") + ".",
+      `<b>Dobras:</b> soma ${dv(S[n]-S[p],0," mm")}` + (top.length ? `, puxada por ${top.map(([k,v]) => `${nomeDob[k].toLowerCase()} (${dv(v,0,"")})`).join(" e ")}.` : ".")
+    ]);
+    html += `<div class="cols">${caixa(`Do início até hoje (${mesAno(D[0])} → ${mesAno(D[n])})`, ini)}${caixa(`Último ciclo (${D[p].slice(0,5)} → ${D[n]})`, ciclo)}</div>`;
+  }
+  const { g, mm, peso, imc, rcq } = x, gN = g[n], imcN = imc[n], rcqN = rcq[n];
+  const classeImc = v => v < 18.5 ? "abaixo do peso" : v < 25 ? "peso normal" : v < 30 ? "sobrepeso" : v < 35 ? "obesidade grau I" : v < 40 ? "obesidade grau II" : "obesidade grau III";
+  const lim = al.sexo === "Feminino" ? 0.85 : 0.90, meta = al.meta;
+  const pesoMeta = meta != null && mm[n] != null ? mm[n] / (1 - meta/100) : null;
+  html += caixa("Classificação e meta", ul([
+    meta != null && gN != null && (gN <= meta ? `<b>Meta de ${f(meta,1)}% de gordura:</b> cumprida (atual ${f(gN,1)}%).`
+      : `<b>Meta de ${f(meta,1)}% de gordura:</b> faltam ${f(gN-meta,1)} ponto${gN-meta>=2?"s":""} (atual ${f(gN,1)}%). Mantendo os ${f(mm[n],1)} kg de massa magra, a meta corresponde a cerca de <b>${f(pesoMeta,1)} kg</b> — ou seja, perder aproximadamente <b>${f(peso[n]-pesoMeta,1)} kg de gordura</b>.`),
+    meta == null && gN != null && `<b>% de gordura atual:</b> ${f(gN,1)}%. Defina uma meta no cadastro do aluno para ver quanto falta.`,
+    imcN != null && `<b>IMC atual:</b> ${f(imcN,1)} (${classeImc(imcN)}, pela OMS). O IMC não separa gordura de massa magra; o % de gordura é a referência principal.`,
+    rcqN != null && `<b>RCQ atual:</b> ${f(rcqN,2)} — ${rcqN < lim ? "abaixo" : "acima"} do limite de risco da OMS (${f(lim,2)} para ${al.sexo === "Feminino" ? "mulheres" : "homens"}).`
+  ]), "margin-top:12px");
+  const obsL = (al.observacoes || "").split(/\n+/).map(s => s.trim()).filter(Boolean);
+  if (obsL.length) html += caixa("Observações do avaliador", ul(obsL.map(esc)), "margin-top:12px");
+  return html;
+}
+function celulas(l, comItem, si, li){
+  const [nome,arr,d,,bom,,marca]=l, n=arr.length-1, mn = marca ? Math.min(...arr.filter(v=>v!=null)) : null;
+  const dl = arr[0]!=null&&arr[n]!=null ? `<td class="dv ${classe(arr[n]-arr[0],bom)}">${sinal(arr[n]-arr[0])}${f(Math.abs(arr[n]-arr[0]),d)}</td>` : '<td class="dv neu">—</td>';
+  const tds = arr.map((v,i)=>`<td class="${i==n?"last":""} ${v!=null&&v===mn?"min":""}">${f(v,d)}</td>`).join("");
+  return comItem ? `<tr class="item" tabindex="0" data-s="${si}" data-l="${li}" title="Ver gráfico de ${esc(nome)}"><th>${esc(nome)}</th>${tds}${dl}</tr>` : `<tr><th>${esc(nome)}</th>${tds}${dl}</tr>`;
+}
+function abrirRelatorio(al, souAdmin){
+  AL = al; const dados = montarDados(al); D = dados.D; SECOES = dados.secoes; EXTRA = dados;
+  const n = D.length-1, C = SECOES[0].linhas, desde = D[0].slice(3);
+  $("conta").innerHTML = `${souAdmin ? "Administrador" : "Aluno"}: ${esc(auth.currentUser.email)}`;
+  $("voltar").hidden = !souAdmin;
+  $("sub1").innerHTML = `<b>Aluno:</b> ${esc(al.nome)} · <b>Sexo:</b> ${esc(al.sexo)} · <b>Idade atual:</b> ${esc(idadeTexto(al))}`;
+  $("sub2").innerHTML = `<b>Período:</b> ${n ? `${D[0]} a ${D[n]}` : D[0]} · <b>${D.length} ${D.length>1?"avaliações":"avaliação"}</b> · <b>Protocolo:</b> ${esc(al.protocolo || "Pollock 7 dobras")}`;
+  $("kpis").innerHTML = KPI_FINAL = dados.kpis.map(([rot,i,bom]) => { const l=C[i], a=l[1], x=a[n]-a[0], u=l[3];
+    return `<div class="kpi"><div class="l">${rot} — atual</div><div class="v">${f(a[n],1)} <small>${u}</small></div><div class="d">desde ${desde}: <b class="${classe(x,bom)}">${sinal(x)}${f(Math.abs(x),1)} ${u}</b></div></div>`; }).join("");
+  $("menus").innerHTML = SECOES.map((s,si)=>{
+    const corpo = s.linhas.map((l,li)=> l[0]==="g" ? `<tr class="grp"><th colspan="${D.length+2}">${esc(l[1])}</th></tr>` : celulas(l,true,si,li)).join("");
+    return `<section class="menu" id="m-${s.id}"><button type="button" aria-expanded="false"><span>${esc(s.titulo)}</span><span class="seta">▼</span></button>
+      <div class="painel"><div class="interno"><div class="pad"><p class="dica">Clique em uma linha para ver o gráfico de evolução.</p>
+      <div class="rolagem"><table><thead><tr><th>${esc(s.col)}</th>${D.map(x=>`<th>${curta(x)}</th>`).join("")}<th>Δ total</th></tr></thead><tbody>${corpo}</tbody></table></div>
+      <p class="note">${esc(s.nota)}</p></div></div></div></section>`;
+  }).join("");
+  $("analise").innerHTML = dados.analise;
+  $("m-analise").classList.remove("aberto");
+  montarPdf();
+  $("admin").hidden = true; $("app").hidden = false; esconderAbertura(); scrollTo(0,0);
+  // Animações de entrada
+  revelar([document.querySelector("#app header")],0);
+  revelar([...document.querySelectorAll(".kpi")],.09);
+  revelar([...document.querySelectorAll("#app .menu")],.08);
+  revelar([document.querySelector(".area-pdf"),document.querySelector("#app footer")],.05);
+  if(!semMov) document.querySelectorAll("#kpis .kpi .v").forEach((v,i)=>{
+    const no=v.firstChild, alvo=parseFloat(no.textContent.replace(",",".")), ini=performance.now()+400+i*90, dur=1300;
+    const passo=t=>{ const x=Math.min(Math.max((t-ini)/dur,0),1), e=1-Math.pow(1-x,3); no.textContent=f(alvo*e,1)+" "; if(x<1) requestAnimationFrame(passo); };
+    no.textContent=f(0,1)+" "; requestAnimationFrame(passo);
+  });
+}
+// Menus: abrem e fecham; as linhas aparecem em sequência
+document.addEventListener("click", e => {
+  const b = e.target.closest(".menu > button"); if (!b) return;
+  const m = b.parentElement, ab = m.classList.toggle("aberto"); b.setAttribute("aria-expanded", ab);
+  if (ab) m.querySelectorAll("tr.item, tr.grp").forEach((tr,i)=>{ tr.classList.remove("visivel"); tr.classList.add("revela"); tr.style.setProperty("--atraso",Math.min(i*.04,.6).toFixed(2)+"s"); obs.unobserve(tr); requestAnimationFrame(()=>obs.observe(tr)); });
+});
+
+// Gráfico de linha do card
+function grafico(arr,cor,d){
+  const W=600,H=300,l=44,r=22,t=30,b=56, vals=arr.filter(v=>v!=null), mn=Math.min(...vals), mx=Math.max(...vals), pad=(mx-mn)*0.25||1;
+  const lo=mn-pad, hi=mx+pad, X=i=>arr.length>1 ? l+i*(W-l-r)/(arr.length-1) : (l+W-r)/2, Y=v=>t+(hi-v)*(H-t-b)/(hi-lo), dd=d>1?1:d;
+  const pts = arr.map((v,i)=>v==null?null:[X(i),Y(v),v,i]).filter(Boolean);
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img">`;
+  for(let g=0;g<=4;g++){ const v=lo+(hi-lo)*g/4, y=Y(v); s+=`<line x1="${l}" x2="${W-r}" y1="${y}" y2="${y}" stroke="#e5e7eb"/><text x="${l-6}" y="${y+4}" font-size="11" fill="#6b7280" text-anchor="end">${f(v,Math.max(dd,1))}</text>`; }
+  s+=`<polygon points="${pts[0][0]},${H-b} ${pts.map(p=>p[0]+","+p[1]).join(" ")} ${pts[pts.length-1][0]},${H-b}" fill="${cor}" class="area"/>`;
+  s+=`<polyline class="linha" pathLength="1" points="${pts.map(p=>p[0]+","+p[1]).join(" ")}" fill="none" stroke="${cor}" stroke-width="2.5" stroke-linejoin="round"/>`;
+  pts.forEach((p,k)=>{ s+=`<g class="pt" style="animation-delay:${(.15+k*.11).toFixed(2)}s"><circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="#fff" stroke="${cor}" stroke-width="2.5"/><text x="${p[0]}" y="${p[1]-10}" font-size="12" font-weight="700" fill="#111827" text-anchor="middle">${f(p[2],dd)}</text></g>`; });
+  arr.forEach((v,i)=>{ s+=`<text transform="translate(${X(i)+4},${H-b+16}) rotate(-38)" font-size="11" fill="${v==null?"#c4c9d2":"#6b7280"}" text-anchor="end">${curta(D[i])}</text>`; });
+  return s+"</svg>";
+}
+const fundo = $("fundo-card"); let origem = null;
+function abrir(tr){
+  const s=SECOES[tr.dataset.s], [nome,arr,d,u,bom,cor]=s.linhas[tr.dataset.l], [i0,i1]=pontas(arr), x=arr[i1]-arr[i0], vals=arr.filter(v=>v!=null);
+  document.querySelectorAll("tr.item.sel").forEach(e=>e.classList.remove("sel")); tr.classList.add("sel"); origem = tr;
+  const grupo = [...document.querySelectorAll(`tr.item[data-s="${tr.dataset.s}"]`)];
+  $("card-secao").textContent = `${s.titulo} · ${grupo.indexOf(tr)+1} de ${grupo.length}`;
+  $("card-titulo").textContent = nome; $("card-titulo").style.color = cor||"#1d4ed8";
+  $("card-grafico").innerHTML = grafico(arr,cor||"#1d4ed8",d);
+  const un = u?" "+u:"";
+  $("card-resumo").innerHTML =
+    `<span>${curta(D[i0])}: <b>${f(arr[i0],d)}${un}</b></span><span>${curta(D[i1])}: <b>${f(arr[i1],d)}${un}</b></span>`+
+    `<span>Variação: <b class="${classe(x,bom)}">${sinal(x)}${f(Math.abs(x),d)}${un}</b></span>`+
+    `<span>Mín.: <b>${f(Math.min(...vals),d)}</b> · Máx.: <b>${f(Math.max(...vals),d)}</b></span>`;
+  if(!fundo.classList.contains("aberto")){ fundo.classList.add("aberto"); $("fechar").focus(); }
+}
+function navegar(passo){
+  if(!origem) return;
+  const g = $("card-grafico"); g.classList.remove("vem-dir","vem-esq"); void g.offsetWidth; g.classList.add(passo>0?"vem-dir":"vem-esq");
+  const grupo = [...document.querySelectorAll(`tr.item[data-s="${origem.dataset.s}"]`)];
+  abrir(grupo[(grupo.indexOf(origem)+passo+grupo.length)%grupo.length]);
+}
+function fechar(){
+  fundo.classList.remove("aberto"); document.querySelectorAll("tr.item.sel").forEach(e=>e.classList.remove("sel"));
+  if(origem){ origem.focus(); origem=null; }
+}
+$("ant").addEventListener("click",()=>navegar(-1));
+$("prox").addEventListener("click",()=>navegar(1));
+$("fechar").addEventListener("click",fechar);
+fundo.addEventListener("click",e=>{ if(e.target===fundo) fechar(); });
+document.addEventListener("click",e=>{ const tr=e.target.closest("tr.item"); if(tr) abrir(tr); });
+document.addEventListener("keydown",e=>{
+  const tr = e.target.closest?.("tr.item");
+  if(tr && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); return abrir(tr); }
+  if(!fundo.classList.contains("aberto")) return;
+  if(e.key==="Escape") fechar();
+  if(e.key==="ArrowLeft") navegar(-1);
+  if(e.key==="ArrowRight") navegar(1);
+});
+
+// ===== PDF: layout da primeira versão (6 gráficos em cima, tabelas embaixo) =====
+function graficoPdf(titulo,arr,cor,d){
+  const W=360,H=178,l=30,r=14,t=20,b=40, vv=arr.filter(v=>v!=null), mn=Math.min(...vv), mx=Math.max(...vv), pad=(mx-mn)*0.25||1;
+  const lo=mn-pad, hi=mx+pad, X=i=>arr.length>1 ? l+i*(W-l-r)/(arr.length-1) : (l+W-r)/2, Y=v=>t+(hi-v)*(H-t-b)/(hi-lo), dd=d>1?1:d;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  for(let g=0;g<=4;g++){ const v=lo+(hi-lo)*g/4, y=Y(v); s+=`<line x1="${l}" x2="${W-r}" y1="${y}" y2="${y}" stroke="#e5e7eb"/><text x="${l-4}" y="${y+3}" font-size="7.5" fill="#6b7280" text-anchor="end">${f(v,dd)}</text>`; }
+  s+=`<polygon points="${X(0)},${H-b} ${arr.map((v,i)=>X(i)+","+Y(v)).join(" ")} ${X(arr.length-1)},${H-b}" fill="${cor}" opacity=".08"/>`;
+  s+=`<polyline points="${arr.map((v,i)=>X(i)+","+Y(v)).join(" ")}" fill="none" stroke="${cor}" stroke-width="2"/>`;
+  arr.forEach((v,i)=>{ s+=`<circle cx="${X(i)}" cy="${Y(v)}" r="3" fill="#fff" stroke="${cor}" stroke-width="2"/><text x="${X(i)}" y="${Y(v)-7}" font-size="8" font-weight="700" fill="#111827" text-anchor="middle">${f(v,dd)}</text><text transform="translate(${X(i)+3},${H-b+11}) rotate(-38)" font-size="7.5" fill="#6b7280" text-anchor="end">${curta(D[i])}</text>`; });
+  return `<div class="chart"><h3 style="color:${cor}">${esc(titulo)}</h3>${s}</svg></div>`;
+}
+function montarPdf(){
+  if(!AL) return;
+  const C = SECOES[0].linhas, n = D.length-1, hoje = new Date().toLocaleDateString("pt-BR");
+  $("rel").innerHTML = `<div class="rwrap">
+    <header>
+      <img src="logo-bruno-personal.png" alt="Bruno Personal Trainer">
+      <div>
+        <h1>Relatório de <span>Avaliações Físicas</span></h1>
+        <div class="sub"><b>Aluno:</b> ${esc(AL.nome)} &nbsp;·&nbsp; <b>Sexo:</b> ${esc(AL.sexo)} &nbsp;·&nbsp; <b>Idade atual:</b> ${esc(idadeTexto(AL))}</div>
+        <div class="sub"><b>Período:</b> ${n ? `${D[0]} a ${D[n]}` : D[0]} &nbsp;·&nbsp; <b>${D.length} ${D.length>1?"avaliações":"avaliação"}</b> &nbsp;·&nbsp; <b>Protocolo:</b> ${esc(AL.protocolo || "Pollock 7 dobras")}</div>
+        <div class="sub"><b>Avaliador:</b> Bruno Dias de Oliveira — CREF 018926-G/RJ</div>
+      </div>
+    </header>
+    <div class="kpis">${KPI_FINAL}</div>
+    <h2>Evolução da composição corporal</h2>
+    <div class="charts">${EXTRA.graficosPdf.map(([t,i,cor])=>graficoPdf(t,C[i][1],cor,C[i][2])).join("")}</div>
+    ${EXTRA.notaGraficos ? `<p class="note">${esc(EXTRA.notaGraficos)}</p>` : ""}
+    ${SECOES.map((s,i)=>`<h2 ${i==0?'class="pb"':""}>${esc(s.tituloPdf)}</h2>
+      <table><thead><tr><th style="text-align:left">${esc(s.colPdf)}</th>${D.map(x=>`<th>${curta(x)}</th>`).join("")}<th>Δ total</th></tr></thead><tbody>${
+        s.linhas.map(l=> l[0]==="g" ? `<tr class="grp"><th colspan="${D.length+2}">${esc(l[1])}</th></tr>` : celulas(l,false)).join("")}</tbody></table>
+      ${s.notaPdf?`<p class="note">${esc(s.nota)}</p>`:""}`).join("")}
+    <h2 class="pb">Análise</h2>
+    ${EXTRA.analise}
+    <footer>
+      <span>Bruno Personal Trainer — Bruno Dias de Oliveira · CREF 018926-G/RJ</span>
+      <span>${esc(EXTRA.fontes)} · Emitido em ${hoje}</span>
+    </footer>
+  </div>`;
+}
+const tituloTela = document.title;
+addEventListener("beforeprint",()=>{ montarPdf(); if(AL) document.title = "Relatório de Avaliações Físicas - " + AL.nome; });
+addEventListener("afterprint",()=>{ document.title = tituloTela; });
+$("btn-pdf").addEventListener("click",()=>{ if(fundo.classList.contains("aberto")) fechar(); window.print(); });
+</script>
+</body>
+</html>
